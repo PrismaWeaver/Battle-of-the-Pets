@@ -1,4 +1,4 @@
-# Battle-of-the-Pets
-a web app that uses various animal API to generate competitions where users can vote on which pet picture they prefer, which will add stats to a leaderboard
+# Recipe App
+a web app that allows users to create an account and create and modify recipe lists
 ## Authors
 Twee Shackelford, Richard Sullivan
