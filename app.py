@@ -7,11 +7,18 @@ import os
 from os import getenv
 import requests
 
-
+# create the app
 app = Flask(__name__)
+
+# load environment variables and set app config settings
 load_dotenv(find_dotenv())
+
 app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
+app.config['SECRET_KEY'] = getenv("SECRET_KEY")
+
+# create database
 db = SQLAlchemy(app)
+
 
 # this will serve as the base for the recipe database
 
@@ -27,8 +34,19 @@ class User(db.Model):
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(420), nullable=False)
 
+# make sure sql alchemy tables are created
 with app.app_context():
     db.create_all()
+
+# setup user authentification
+login_manager = LoginManager()
+login_manager.init_app(app)
+
+# this is how the login manager will be able to
+# set who is logged in.
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.get(user_id)
 
 
 # the following is the base for the login screen
