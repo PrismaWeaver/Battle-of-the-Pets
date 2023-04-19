@@ -51,6 +51,7 @@ def login():
 
 @app.route('/dash')
 def index():
+    pass
     #this page should display the user dashboard:
     #a searchbar at the top which redirects to the search page
     #a display of saved recipes list
