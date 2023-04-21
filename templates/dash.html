@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Recipe Site</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dash.css') }}">
+</head>
+<body>
+    <nav>
+        <ul>
+            <li><a href="#">Search Recipes</a></li>
+            <li><a href="#">Saved Recipes</a></li>
+            <li><a href="#">Grocery List</a></li>
+			<li><a href="{{ url_for('logout') }}">Logout</a></li>
+        </ul>
+    </nav>
+    <header>
+        <h1>Welcome to My Recipe Site</h1>
+    </header>
+    <main>
+        <form action="#" method="get">
+            <label for="search">Search for Recipes:</label>
+            <input type="text" id="search" name="search" placeholder="Search...">
+            <button type="submit">Search</button>
+        </form>
+        <h2>Results for 'pasta':</h2>
+        <ul>
+            <li><a href="#">Pasta with Tomato Sauce</a></li>
+            <li><a href="#">Spaghetti Bolognese</a></li>
+            <li><a href="#">Pesto Pasta Salad</a></li>
+        </ul>
+    </main>
+</body>
+</html>
+

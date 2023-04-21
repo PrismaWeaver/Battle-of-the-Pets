@@ -90,6 +90,13 @@ def login():
     return render_template('login.html', error=error)
 
 
+# Logout: this logs out the user and sends them back to the start route
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('start'))
+
+
 # Create Account: you can arrive here from the login page
 # on this page you create a new acocunt to be stored in the database
 @app.route('/create_account',methods=['GET','POST'])
@@ -207,41 +214,47 @@ def list_generator():
     
 
 
-    #this page should display the user dashboard:
-    #a searchbar at the top which redirects to the search page
-    #a display of saved recipes list
-    #maybe previous comments from the user
+"""
+stuff that probably needs to be deleted
 
-@app.route('/search/<id>') #id is for the index of the search
-@login_required
-def search():
-    #search should be passed via redirect
-    #this is to keep the same search while navigating pages
-    search = request.args['search']
-    
-    #some code to break the search into blocks of 10? 20?
-    #id refers to the num of blocks to incriment forward by when loading the page
-    
-    return render_template("search.html", search=search, id=id)
-    
-    #these should be called by nav buttons on the search page:
-    #for prev page
-    # return flask.redirect(flask.url_for("search", search=search, id=id-1))
-    #for next page
-    # return flask.redirect(flask.url_for("search", search=search, id=id+1))
+"""
 
-#this is a basic template for how to enter data into the DB
-#and also a template for managing button interactions on the page
-@app.route('/submit', methods=["POST"])
-@login_required
-def submit():
-    form_data = request.form
-    c = Comment(movie = form_data["movie"], 
-                      username = form_data["user"],
-                      rating = form_data["rating"],
-                      comment = form_data["comment"])  
-    db.session.add(c)
-    db.session.commit()
-    return redirect(flask.url_for("index", user=form_data["user"]))
 
-#app.run()
+##    #this page should display the user dashboard:
+#    #a searchbar at the top which redirects to the search page
+#    #a display of saved recipes list
+#    #maybe previous comments from the user
+#
+#@app.route('/search/<id>') #id is for the index of the search
+#@login_required
+#def search():
+#    #search should be passed via redirect
+#    #this is to keep the same search while navigating pages
+#    search = request.args['search']
+#    
+#    #some code to break the search into blocks of 10? 20?
+#    #id refers to the num of blocks to incriment forward by when loading the page
+#    
+#    return render_template("search.html", search=search, id=id)
+#    
+#    #these should be called by nav buttons on the search page:
+#    #for prev page
+#    # return flask.redirect(flask.url_for("search", search=search, id=id-1))
+#    #for next page
+#    # return flask.redirect(flask.url_for("search", search=search, id=id+1))
+#
+##this is a basic template for how to enter data into the DB
+##and also a template for managing button interactions on the page
+#@app.route('/submit', methods=["POST"])
+#@login_required
+#def submit():
+#    form_data = request.form
+#    c = Comment(movie = form_data["movie"], 
+#                      username = form_data["user"],
+#                      rating = form_data["rating"],
+#                      comment = form_data["comment"])  
+#    db.session.add(c)
+#    db.session.commit()
+#    return redirect(flask.url_for("index", user=form_data["user"]))
+#
+##app.run()
