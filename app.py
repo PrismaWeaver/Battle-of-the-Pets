@@ -25,10 +25,15 @@ db = SQLAlchemy(app)
 # These classes form the relations in the database 
 class Comment(db.Model): #a model for a row, defines a table
     id = db.Column(db.Integer, primary_key=True)
-    movie = db.Column(db.Integer, unique=False, nullable=False)
-    username = db.Column(db.String(80), unique=False, nullable=False)
+    recipe = db.Column(db.Integer, unique=False, nullable=False)
+    user = db.Column(db.String(80), unique=False, nullable=False)
     rating = db.Column(db.Integer, unique=False, nullable=False)
     comment = db.Column(db.String(420), unique=False, nullable=False)
+    
+class Saved_Recipes(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user = db.Column(db.String(80), unique=False, nullable=False)
+    recipe = db.Column(db.Integer, unique=False, nullable=False)
     
 class User(db.Model,UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -113,12 +118,95 @@ def create_account():
     return render_template('create_account.html',error=error)
 
     
-# the following is the base for the recipe list screen
-
+#this displays the dashboard, should always be accessible from every page
 @app.route('/dash')
 @login_required
 def index():
+    saved_list = db.session.query(Saved_Recipes).filter_by(user=current_user.username).all()
+    comments = db.session.query(Comment).filter_by(user=current_user.username).all()
+    #stretch feature for displaying most popular recipes
+    #query the comments per recipe for most popular recipes and display information of the one with the best overall rating
+    #should give higher weight to recipes with more comments?
+    return render_template('dash.html', saved_list = saved_list, comments=comments)
+
+
+#search bar function, should always be accessible from every page
+#POST called if a new search is entered, thus it displays the first page of the new search
+#GET called if next/prev page called of current search
+@app.route('/search/<term>/<indi>', methods=['GET', 'POST']) #id is for the index of the search
+@login_required
+def search(term, indi):
+    if (request.method == 'POST'):
+        load_dotenv(find_dotenv())
+        SPOON_API_SEARCH_URL = "https://api.spoonacular.com/recipes/complexSearch?"
+        spoon_api_response = requests.get(
+            SPOON_API_SEARCH_URL,
+            params={
+                "apiKey": getenv("RECIPE_API"),
+                "query": term
+            },
+        )
+        results = spoon_api_response.json()
+        return render_template('search.html', results=results, term=term, indi=0)
+    else:
+        #indi can be manipulated from the html page, no code needed for separate buttons
+        return render_template('search.html', results=request.args['result'], term=term, indi=indi)
+
+
+#when link from search/saved-list clicked, redirects to this. Uses ID of recipe
+#ID can be accessed via recipe["id"]
+@app.route('/recipe/<recipe_id>')
+@login_required
+def recipe(recipe_id):
+    SPOON_API_GET_RECIPE_URL = "https://api.spoonacular.com/recipes/"
+    spoon_api_response = requests.get(
+            SPOON_API_GET_RECIPE_URL + recipe_id + '/information',
+            params={
+                "apiKey": getenv("RECIPE_API"),
+            },
+        )
+    recipe = spoon_api_response.json()
+    return render_template('recipe.html', recipe=recipe)
+
+
+#this handles both adding comments/ratings & adding to saved recipes
+@app.route('/recipe/<recipe_id>/submit', methods=["POST"])
+@login_required
+def submit(recipe_id):
+    form_data = request.form
+    if(form_data["type"] == 'comment'): #for comment submission
+        c = Comment(recipe = recipe_id, 
+                        user = current_user.username,
+                        rating = form_data["rating"],
+                        comment = form_data["comment"])  
+        db.session.add(c)
+        db.session.commit()
+    else: #for adding to saved list
+        s = Saved_Recipes(recipe = recipe_id, 
+                        user = current_user.username)  
+        db.session.add(s)
+        db.session.commit()
+    return redirect(flask.url_for("recipe"), recipe=recipe_id)
+
+
+#this will generate the printable shopping list from entries in the saved list
+#currently this will use every recipe in the saved list
+#for stretch features shopping list should be a separate DB that has:
+# >desired servings adjustments, which can be tuned before the final product is produced
+# >ingredient aggrigation, happens once the list is generated
+@app.route('/shopping-list')
+@login_required
+def list_generator():
     pass
+    #saved_list = db.session.query(Saved_Recipes).filter_by(user=current_user.username).all()
+    #for recipe in saved_list:
+        #use API to collect ingredient information from each saved recipe
+        #create an dictionary with keys for each ingredient
+        # >if key does not exist, set initial value to 0 and add ingredients
+        # >else incriment ingredients by whats required for the recipe 
+    
+
+
     #this page should display the user dashboard:
     #a searchbar at the top which redirects to the search page
     #a display of saved recipes list
