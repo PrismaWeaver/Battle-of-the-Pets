@@ -126,7 +126,7 @@ def create_account():
 
     
 #this displays the dashboard, should always be accessible from every page
-@app.route('/dash')
+@app.route('/dashboard')
 @login_required
 def index():
     saved_list = db.session.query(Saved_Recipes).filter_by(user=current_user.username).all()
@@ -134,15 +134,15 @@ def index():
     #stretch feature for displaying most popular recipes
     #query the comments per recipe for most popular recipes and display information of the one with the best overall rating
     #should give higher weight to recipes with more comments?
-    return render_template('dash.html', saved_list = saved_list, comments=comments)
+    return render_template('index.html', saved_list = saved_list, comments=comments)
 
 
 #search bar function, should always be accessible from every page
 #POST called if a new search is entered, thus it displays the first page of the new search
 #GET called if next/prev page called of current search
-@app.route('/search/<term>/<indi>', methods=['GET', 'POST']) #id is for the index of the search
+@app.route('/search/<term>', methods=['GET', 'POST']) #id is for the index of the search
 @login_required
-def search(term, indi):
+def search(term):
     if (request.method == 'POST'):
         load_dotenv(find_dotenv())
         SPOON_API_SEARCH_URL = "https://api.spoonacular.com/recipes/complexSearch?"
@@ -154,10 +154,10 @@ def search(term, indi):
             },
         )
         results = spoon_api_response.json()
-        return render_template('search.html', results=results, term=term, indi=0)
+        return render_template('search.html', results=results, term=term)
     else:
         #indi can be manipulated from the html page, no code needed for separate buttons
-        return render_template('search.html', results=request.args['result'], term=term, indi=indi)
+        return render_template('search.html', results=request.args['result'], term=term)
 
 
 #when link from search/saved-list clicked, redirects to this. Uses ID of recipe
@@ -165,15 +165,30 @@ def search(term, indi):
 @app.route('/recipe/<recipe_id>')
 @login_required
 def recipe(recipe_id):
-    SPOON_API_GET_RECIPE_URL = "https://api.spoonacular.com/recipes/"
-    spoon_api_response = requests.get(
-            SPOON_API_GET_RECIPE_URL + recipe_id + '/information',
+    SPOON_API_GET_RECIPE_URL = "https://api.spoonacular.com/recipes/" + recipe_id
+    spoon_api_response_1 = requests.get(
+            SPOON_API_GET_RECIPE_URL + '/information',
             params={
                 "apiKey": getenv("RECIPE_API"),
             },
         )
-    recipe = spoon_api_response.json()
-    return render_template('recipe.html', recipe=recipe)
+    recipe = spoon_api_response_1.json()
+    spoon_api_response_2 = requests.get(
+            SPOON_API_GET_RECIPE_URL + '/analyzedInstructions',
+            params={
+                "apiKey": getenv("RECIPE_API"),
+            },
+        )
+    instructions = spoon_api_response_2.json()
+    spoon_api_response_3 = requests.get(
+            SPOON_API_GET_RECIPE_URL + '/ingredientWidget.json',
+            params={
+                "apiKey": getenv("RECIPE_API"),
+            },
+        )
+    ingredients = spoon_api_response_3.json()
+    query = db.session.query(Comment).filter_by(recipe=recipe_id).all()
+    return render_template('recipe.html', recipe=recipe, instruct=instructions, ingred=ingredients, query=query)
 
 
 #this handles both adding comments/ratings & adding to saved recipes

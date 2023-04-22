@@ -21,16 +21,13 @@
       </form>
     </div>
   </div>
-  <h3>Welcome, {{current_user.username}}</h3>
-  <!--Display saved recipes-->
-  <!--Display recipe comments-->
-  <tr>
-    {%for id in query%}
-    <td><a href="{{url_for('recipe')}}" recipe_id="{{id.recipe}}">recipe page</a></td>
-    <td>{{id.rating}}/10</td>
-    <td>{{id.comment}}</td>
-    {%endfor%}
-  </tr>
+  <!--Display search info, displays full results on one page for now-->
+  Results for: {{term}} <br>
+  {% for recipe in results['results'] %}
+    <li>
+      <a href="{{url_for('recipe')}}" recipe_id="{{results['results'][recipe]['id']}}">{{results['results'][recipe]['title']}}<img src="{{results['results'][recipe]['image']}}"></a>
+    </li>
+  {% endfor %}
 </body>
 
 </html>
