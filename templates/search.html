@@ -11,7 +11,23 @@
 </head>
 
 <body>
-  
+  <!--Home & Searchbar here-->
+  <div class="topnav">
+    <a class="active" href="{{url_for('index')}}"><img src="/images/home.png"></a>
+    <div class="search">
+      <form action="{{url_for('search')}}">
+        <input type="text" placeholder="Search.." name="term">
+        <button type="submit"></button>
+      </form>
+    </div>
+  </div>
+  <!--Display search info, displays full results on one page for now-->
+  Results for: {{term}} <br>
+  {% for recipe in results['results'] %}
+    <li>
+      <a href="{{url_for('recipe')}}" recipe_id="{{results['results'][recipe]['id']}}">{{results['results'][recipe]['title']}}<img src="{{results['results'][recipe]['image']}}"></a>
+    </li>
+  {% endfor %}
 </body>
 
 </html>

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>Recipe Screen</title>
+  <title>{{recipe["title"]}}</title>
   <style>
     body {
     color: #91fefb;
@@ -11,7 +11,77 @@
 </head>
 
 <body>
-  
+    <!--Home & Searchbar here-->
+    <div class="topnav">
+        <a class="active" href="{{url_for('index')}}"><img src="/images/home.png"></a>
+        <div class="search">
+            <form action="{{url_for('search')}}">
+                <input type="text" placeholder="Search.." name="term">
+                <button type="submit"></button>
+            </form>
+          </div>
+      </div>
+    <!--Recipe content here-->
+    <h1>{{recipe["title"]}}</h1>
+    <div>
+        <img src="{{recipe['image']}}" width="100%" margin: -10px>
+    </div>
+    {{recipe['summary']}}
+    <div></div>
+    <!--button to add to savedlist here-->
+    <div class="save recipe">
+        <form action="/submit" method="post">
+        <input type="hidden" name="type" value='save'>
+        <label>Save Recipe</label>
+        <input type="submit" value="Submit">
+        </form>
+    </div>
+    <!--Recipe information here-->
+    servings: {{recipe['servings']}} <br>
+    cook time: {{recipe['readyInMinutes']}} minutes <br>
+    Ingredients: <br>
+    {% for item in ingred['ingredients'] %}
+        <li>{{ingred['ingredients'][item]['amount']['us']['value']}} {{ingred['ingredients'][item]['amount']['us']['unit']}} 
+        {{ingred['ingredients'][item]['name']}} </li>
+    {% endfor %}
+    Instructions:<br>
+    {% for step in instruct['steps'] %}
+        <li>{{instruct['steps'][step]['number']}} . 
+        {{instruct['steps'][step]['step']}} </li>
+    {% endfor %}
+    <!--comments section-->
+    <div class="comments">
+        <form action="/submit" method="post">
+        <input type="hidden" name="type" value='comment'>
+        <label>
+            Rating:
+            <select name="rating" required>
+            <option value="1">1/10</option>
+            <option value="2">2/10</option>
+            <option value="3">3/10</option>
+            <option value="4">4/10</option>
+            <option value="5">5/10</option>
+            <option value="6">6/10</option>
+            <option value="7">7/10</option>
+            <option value="8">8/10</option>
+            <option value="9">9/10</option>
+            <option value="10">10/10</option>
+            </select>
+        </label>
+        <label>
+            Comment:
+            <input type="text" placeholder="Comment"  name="comment" required maxlength="420">
+        </label>
+        <input type="submit" value="Submit">
+        </form>
+        <tr>
+            {%for id in query%}
+            <td>{{id.user}}</td>
+            <td>{{id.rating}}/10</td>
+            <td>{{id.comment}}</td>
+            {%endfor%}
+        </tr>
+    </div>
 </body>
 
 </html>
