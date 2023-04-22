@@ -90,6 +90,13 @@ def login():
     return render_template('login.html', error=error)
 
 
+# Logout: this logs out the user and sends them back to the start route
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('start'))
+
+
 # Create Account: you can arrive here from the login page
 # on this page you create a new acocunt to be stored in the database
 @app.route('/create_account',methods=['GET','POST'])
@@ -187,6 +194,5 @@ def submit(recipe_id):
         db.session.add(s)
         db.session.commit()
     return redirect(flask.url_for("recipe"), recipe=recipe_id)
-
 
 #app.run()
