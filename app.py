@@ -178,14 +178,29 @@ def search(term):
 @login_required
 def recipe(recipe_id):
     SPOON_API_GET_RECIPE_URL = "https://api.spoonacular.com/recipes/" + recipe_id
-    spoon_api_response = requests.get(
+    spoon_api_response_1 = requests.get(
             SPOON_API_GET_RECIPE_URL + '/information',
             params={
                 "apiKey": getenv("RECIPE_API"),
             },
         )
-    recipe = spoon_api_response.json()
-    return render_template('recipe.html', recipe=recipe)
+    recipe = spoon_api_response_1.json()
+    spoon_api_response_2 = requests.get(
+            SPOON_API_GET_RECIPE_URL + '/analyzedInstructions',
+            params={
+                "apiKey": getenv("RECIPE_API"),
+            },
+        )
+    instructions = spoon_api_response_2.json()
+    spoon_api_response_3 = requests.get(
+            SPOON_API_GET_RECIPE_URL + '/ingredientWidget.json',
+            params={
+                "apiKey": getenv("RECIPE_API"),
+            },
+        )
+    ingredients = spoon_api_response_3.json()
+    query = db.session.query(Comment).filter_by(recipe=recipe_id).all()
+    return render_template('recipe.html', recipe=recipe, instruct=instructions, ingred=ingredients, query=query)
 
 
 #this handles both adding comments/ratings & adding to saved recipes
