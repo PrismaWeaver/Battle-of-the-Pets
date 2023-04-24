@@ -35,7 +35,7 @@ class Saved_Recipes(db.Model):
     user = db.Column(db.String(80), unique=False, nullable=False)
     recipe = db.Column(db.Integer, unique=False, nullable=False)
     
-class User(db.Model,UserMixin):
+class Person(db.Model,UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(420), nullable=False)
@@ -53,7 +53,7 @@ login_manager.init_app(app)
 # set who is logged in.
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(user_id)
+    return Person.query.get(user_id)
 
 
 # Landing Page: If the user is logged in, go directly to the
@@ -77,7 +77,7 @@ def login():
         password = request.form['password']
 
         # get a user from the database
-        user = User.query.filter_by(username=username).first()
+        user = Person.query.filter_by(username=username).first()
 
         # if the user exists and the password matches, log them in
         if user and check_password_hash(user.password, password):
@@ -107,7 +107,7 @@ def create_account():
         password = request.form['password']
 
         # get user from the database
-        user = User.query.filter_by(username=username).first()
+        user = Person.query.filter_by(username=username).first()
 
         # if you were able to find a user, then log error
         if user:
@@ -117,7 +117,7 @@ def create_account():
             # hash the users password
             hashed_password = generate_password_hash(password)
             # save user credentials to the database
-            new_user = User(username=username,password=hashed_password)
+            new_user = Person(username=username,password=hashed_password)
             db.session.add(new_user)
             db.session.commit()
             return render_template('login.html')
