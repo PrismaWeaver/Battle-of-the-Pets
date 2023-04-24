@@ -129,54 +129,58 @@ def create_account():
 @login_required
 def index():
     saved_list = db.session.query(Saved_Recipes).filter_by(user=current_user.username).all()
+    #the saved_list will likely require some API calls right here in order to properly display
+    #might be API intensive to display too many in one list
     comments = db.session.query(Comment).filter_by(user=current_user.username).all()
     #stretch feature for displaying most popular recipes
     #query the comments per recipe for most popular recipes and display information of the one with the best overall rating
     #should give higher weight to recipes with more comments?
     return render_template('dash.html', saved_list = saved_list, comments=comments)
 
-@app.route('/search_page',methods=['GET','POST'])
+#search bar function, should always be accessible from every page
+@app.route('/search',methods=['GET','POST'])
 @login_required
-def search_page():
-
-    results = None
-
+def search():
+    results = request.form['results']
     # if the user performed a query, parse the results and display
     if request.method == 'POST':
         query = request.form['query']
         # Use the Whoosh library to search for the query
         # Return the search results in an HTML template
-        results = ['I','do','love','pandas']
-    return render_template('search_page.html', results=results)
-
-#search bar function, should always be accessible from every page
-#POST called if a new search is entered, thus it displays the first page of the new search
-#GET called if next/prev page called of current search
-@app.route('/search/<term>', methods=['GET', 'POST']) #id is for the index of the search
-@login_required
-def search(term):
-    if (request.method == 'POST'):
         load_dotenv(find_dotenv())
         SPOON_API_SEARCH_URL = "https://api.spoonacular.com/recipes/complexSearch?"
         spoon_api_response = requests.get(
             SPOON_API_SEARCH_URL,
             params={
                 "apiKey": getenv("RECIPE_API"),
-                "query": term
+                "query": query
             },
         )
         results = spoon_api_response.json()
-        return render_template('search.html', results=results, term=term)
-    else:
-        #indi can be manipulated from the html page, no code needed for separate buttons
-        return render_template('search.html', results=request.args['result'], term=term)
+    return render_template('search.html', results=results)
 
 
 #when link from search/saved-list clicked, redirects to this. Uses ID of recipe
 #ID can be accessed via recipe["id"]
-@app.route('/recipe/<recipe_id>')
+#this also handles both adding comments/ratings & adding to saved recipes
+@app.route('/recipe/', methods=["GET", "POST"])
 @login_required
-def recipe(recipe_id):
+def recipe():
+    form_data = request.form
+    recipe_id = form_data['recipe_id']
+    if request.method == 'POST':
+        if(form_data["type"] == 'comment'): #for comment submission
+            c = Comment(recipe = recipe_id, 
+                            user = current_user.username,
+                            rating = form_data["rating"],
+                            comment = form_data["comment"])  
+            db.session.add(c)
+            db.session.commit()
+        else: #for adding to saved list
+            s = Saved_Recipes(recipe = recipe_id, 
+                            user = current_user.username)  
+            db.session.add(s)
+            db.session.commit()
     SPOON_API_GET_RECIPE_URL = "https://api.spoonacular.com/recipes/" + recipe_id
     spoon_api_response_1 = requests.get(
             SPOON_API_GET_RECIPE_URL + '/information',
@@ -201,26 +205,6 @@ def recipe(recipe_id):
     ingredients = spoon_api_response_3.json()
     query = db.session.query(Comment).filter_by(recipe=recipe_id).all()
     return render_template('recipe.html', recipe=recipe, instruct=instructions, ingred=ingredients, query=query)
-
-
-#this handles both adding comments/ratings & adding to saved recipes
-@app.route('/recipe/<recipe_id>/submit', methods=["POST"])
-@login_required
-def submit(recipe_id):
-    form_data = request.form
-    if(form_data["type"] == 'comment'): #for comment submission
-        c = Comment(recipe = recipe_id, 
-                        user = current_user.username,
-                        rating = form_data["rating"],
-                        comment = form_data["comment"])  
-        db.session.add(c)
-        db.session.commit()
-    else: #for adding to saved list
-        s = Saved_Recipes(recipe = recipe_id, 
-                        user = current_user.username)  
-        db.session.add(s)
-        db.session.commit()
-    return redirect(flask.url_for("recipe"), recipe=recipe_id)
 
 
 #this will generate the printable shopping list from entries in the saved list
