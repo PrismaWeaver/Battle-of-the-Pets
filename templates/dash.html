@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Recipe Site</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/dash.css') }}">
+</head>
+<body>
+	<!-- Navigation Bar -->
+    <div class="navbar">
+		<a>Home</a>
+		<a href=" {{url_for('search_page') }}">Search</a>
+		<a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+	<br>
+
+	<!-- Main Section -->
+	<div class="container">
+
+	  <!-- Left Side - Saved Recipes List -->
+      <div class="left">
+        <h1>Saved Recipes</h1>
+
+		<ul>
+		  <hr>
+		  <li>
+			  <!-- <a>tacos</a> -->
+			<p> saved list: {{ saved_list }} </p>
+			<p> comment: {{ comments }} </p>
+		  </li>
+		  <hr>
+		</ul>
+      </div>
+
+	  <!-- right Side - Grocery List -->
+      <div class="right">
+        <h1>Grocery List</h1>
+
+		<ul>
+	   	  <hr>
+		  <li>
+			<p>tortillas</p>
+		  </li>
+		  <hr>
+		</ul>
+      </div>
+
+    </div>
+
+</body>
+</html>
+

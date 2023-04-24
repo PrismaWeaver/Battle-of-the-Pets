@@ -1,5 +1,4 @@
 import flask
-import os
 import requests
 
 from dotenv import load_dotenv, find_dotenv
@@ -35,7 +34,7 @@ class Saved_Recipes(db.Model):
     user = db.Column(db.String(80), unique=False, nullable=False)
     recipe = db.Column(db.Integer, unique=False, nullable=False)
     
-class User(db.Model,UserMixin):
+class Person(db.Model,UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     username = db.Column(db.String(80), unique=True, nullable=False)
     password = db.Column(db.String(420), nullable=False)
@@ -53,7 +52,7 @@ login_manager.init_app(app)
 # set who is logged in.
 @login_manager.user_loader
 def load_user(user_id):
-    return User.query.get(user_id)
+    return Person.query.get(user_id)
 
 
 # Landing Page: If the user is logged in, go directly to the
@@ -77,7 +76,7 @@ def login():
         password = request.form['password']
 
         # get a user from the database
-        user = User.query.filter_by(username=username).first()
+        user = Person.query.filter_by(username=username).first()
 
         # if the user exists and the password matches, log them in
         if user and check_password_hash(user.password, password):
@@ -90,6 +89,13 @@ def login():
     return render_template('login.html', error=error)
 
 
+# Logout: this logs out the user and sends them back to the start route
+@app.route('/logout')
+def logout():
+    logout_user()
+    return redirect(url_for('start'))
+
+
 # Create Account: you can arrive here from the login page
 # on this page you create a new acocunt to be stored in the database
 @app.route('/create_account',methods=['GET','POST'])
@@ -100,7 +106,7 @@ def create_account():
         password = request.form['password']
 
         # get user from the database
-        user = User.query.filter_by(username=username).first()
+        user = Person.query.filter_by(username=username).first()
 
         # if you were able to find a user, then log error
         if user:
@@ -110,7 +116,7 @@ def create_account():
             # hash the users password
             hashed_password = generate_password_hash(password)
             # save user credentials to the database
-            new_user = User(username=username,password=hashed_password)
+            new_user = Person(username=username,password=hashed_password)
             db.session.add(new_user)
             db.session.commit()
             return render_template('login.html')
@@ -119,7 +125,7 @@ def create_account():
 
     
 #this displays the dashboard, should always be accessible from every page
-@app.route('/dash')
+@app.route('/dashboard')
 @login_required
 def index():
     saved_list = db.session.query(Saved_Recipes).filter_by(user=current_user.username).all()
@@ -129,13 +135,26 @@ def index():
     #should give higher weight to recipes with more comments?
     return render_template('dash.html', saved_list = saved_list, comments=comments)
 
+@app.route('/search_page',methods=['GET','POST'])
+@login_required
+def search_page():
+
+    results = None
+
+    # if the user performed a query, parse the results and display
+    if request.method == 'POST':
+        query = request.form['query']
+        # Use the Whoosh library to search for the query
+        # Return the search results in an HTML template
+        results = ['I','do','love','pandas']
+    return render_template('search_page.html', results=results)
 
 #search bar function, should always be accessible from every page
 #POST called if a new search is entered, thus it displays the first page of the new search
 #GET called if next/prev page called of current search
-@app.route('/search/<term>/<indi>', methods=['GET', 'POST']) #id is for the index of the search
+@app.route('/search/<term>', methods=['GET', 'POST']) #id is for the index of the search
 @login_required
-def search(term, indi):
+def search(term):
     if (request.method == 'POST'):
         load_dotenv(find_dotenv())
         SPOON_API_SEARCH_URL = "https://api.spoonacular.com/recipes/complexSearch?"
@@ -147,10 +166,10 @@ def search(term, indi):
             },
         )
         results = spoon_api_response.json()
-        return render_template('search.html', results=results, term=term, indi=0)
+        return render_template('search.html', results=results, term=term)
     else:
         #indi can be manipulated from the html page, no code needed for separate buttons
-        return render_template('search.html', results=request.args['result'], term=term, indi=indi)
+        return render_template('search.html', results=request.args['result'], term=term)
 
 
 #when link from search/saved-list clicked, redirects to this. Uses ID of recipe
@@ -158,9 +177,9 @@ def search(term, indi):
 @app.route('/recipe/<recipe_id>')
 @login_required
 def recipe(recipe_id):
-    SPOON_API_GET_RECIPE_URL = "https://api.spoonacular.com/recipes/"
+    SPOON_API_GET_RECIPE_URL = "https://api.spoonacular.com/recipes/" + recipe_id
     spoon_api_response = requests.get(
-            SPOON_API_GET_RECIPE_URL + recipe_id + '/information',
+            SPOON_API_GET_RECIPE_URL + '/information',
             params={
                 "apiKey": getenv("RECIPE_API"),
             },
