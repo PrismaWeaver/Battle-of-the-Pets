@@ -134,8 +134,22 @@ def index():
     #stretch feature for displaying most popular recipes
     #query the comments per recipe for most popular recipes and display information of the one with the best overall rating
     #should give higher weight to recipes with more comments?
-    return render_template('index.html', saved_list = saved_list, comments=comments)
+    return render_template('dash.html', saved_list = saved_list, comments=comments)
 
+@app.route('/search_page',methods=['GET','POST'])
+@login_required
+def search_page():
+
+    results = None
+
+    # if the user performed a query, parse the results and display
+    if request.method == 'POST':
+        query = request.form['query']
+        # Use the Whoosh library to search for the query
+        # Return the search results in an HTML template
+        results = ['I','do','love','pandas']
+
+    return render_template('search_page.html', results=results)
 
 #search bar function, should always be accessible from every page
 #POST called if a new search is entered, thus it displays the first page of the new search

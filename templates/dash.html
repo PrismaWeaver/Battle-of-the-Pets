@@ -7,30 +7,48 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dash.css') }}">
 </head>
 <body>
-    <nav>
-        <ul>
-            <li><a href="#">Search Recipes</a></li>
-            <li><a href="#">Saved Recipes</a></li>
-            <li><a href="#">Grocery List</a></li>
-			<li><a href="{{ url_for('logout') }}">Logout</a></li>
-        </ul>
-    </nav>
-    <header>
-        <h1>Welcome to My Recipe Site</h1>
-    </header>
-    <main>
-        <form action="#" method="get">
-            <label for="search">Search for Recipes:</label>
-            <input type="text" id="search" name="search" placeholder="Search...">
-            <button type="submit">Search</button>
-        </form>
-        <h2>Results for 'pasta':</h2>
-        <ul>
-            <li><a href="#">Pasta with Tomato Sauce</a></li>
-            <li><a href="#">Spaghetti Bolognese</a></li>
-            <li><a href="#">Pesto Pasta Salad</a></li>
-        </ul>
-    </main>
+	<!-- Navigation Bar -->
+    <div class="navbar">
+		<a href="{{ url_for('index') }}">Home</a>
+		<a href=" {{url_for('search_page') }}">Search</a>
+		<a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+
+	<br>
+
+	<!-- Main Section -->
+	<div class="container">
+
+	  <!-- Left Side - Saved Recipes List -->
+      <div class="left">
+        <h1>Saved Recipes</h1>
+
+		<ul>
+		  <hr>
+		  <li>
+			  <!-- <a>tacos</a> -->
+			<p> saved list: {{ saved_list }} </p>
+			<p> comment: {{ comments }} </p>
+		  </li>
+		  <hr>
+		</ul>
+      </div>
+
+	  <!-- right Side - Grocery List -->
+      <div class="right">
+        <h1>Grocery List</h1>
+
+		<ul>
+	   	  <hr>
+		  <li>
+			<p>tortillas</p>
+		  </li>
+		  <hr>
+		</ul>
+      </div>
+
+    </div>
+
 </body>
 </html>
 

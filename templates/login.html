@@ -5,12 +5,12 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/login.css') }}">
   </head>
   <body>
-	<nav>
-      <ul>
-        <li><a href="{{ url_for('login') }}">Login</a></li>
-        <li><a href="{{ url_for('create_account') }}">Create Account</a></li>
-      </ul>
-	</nav>
+	<!-- Navigation Bar -->
+    <div class="navbar">
+	  <a href="{{ url_for('login') }}">Login</a></li>
+	  <a href="{{ url_for('create_account') }}">Create Account</a></li>
+    </div>
+
 	<main>
     <h1>Login</h1>
 

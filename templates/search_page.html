@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Search</title>
+    <link href="{{ url_for('static', filename='css/search_page.css') }}" rel="stylesheet">
+  </head>
+  <body>
+    <!-- Navigation bar -->
+    <div class="navbar">
+		<a href="{{ url_for('index') }}">Home</a>
+		<a href="{{ url_for('search_page') }}">Search</a>
+    </div>
+
+	<br>
+
+	<h1> Search for Recipes </h1>
+    <!-- Search form -->
+    <form method="POST" action="{{ url_for('search_page') }}">
+      <input type="text" id="query" name="query">
+      <button type="submit">Submit</button>
+    </form>
+
+	<br>
+
+	{% if results != None %}
+	<ul>
+	{% for  result in results %}
+	  {% if loop.index0 == 0 %}
+	    <hr>
+	  {% endif %}
+	  <li>
+		<p>{{ result }}<p>
+	  </li>
+	  <hr>
+	{% endfor %}
+	</ul>
+	{% endif %}
+
+  </body>
+</html>
+
