@@ -16,6 +16,7 @@ app = Flask(__name__)
 load_dotenv(find_dotenv())
 app.config["SQLALCHEMY_DATABASE_URI"] = getenv("DATABASE_URL")
 app.config['SECRET_KEY'] = getenv("SECRET_KEY")
+app.secret_key = 'super secret key'
 
 # create database
 db = SQLAlchemy(app)
@@ -141,7 +142,7 @@ def index():
 @app.route('/search',methods=['GET','POST'])
 @login_required
 def search():
-    results = request.form['results']
+    results = None
     # if the user performed a query, parse the results and display
     if request.method == 'POST':
         query = request.form['query']
@@ -163,13 +164,13 @@ def search():
 #when link from search/saved-list clicked, redirects to this. Uses ID of recipe
 #ID can be accessed via recipe["id"]
 #this also handles both adding comments/ratings & adding to saved recipes
-@app.route('/recipe/', methods=["GET", "POST"])
+@app.route('/recipe/<recipe_id>', methods=["GET", "POST"])
 @login_required
-def recipe():
+def recipe(recipe_id):
     form_data = request.form
-    recipe_id = form_data['recipe_id']
     if request.method == 'POST':
-        if(form_data["type"] == 'comment'): #for comment submission
+        #for comment submission
+        if(form_data["type"] == 'comment'): 
             c = Comment(recipe = recipe_id, 
                             user = current_user.username,
                             rating = form_data["rating"],
@@ -181,6 +182,7 @@ def recipe():
                             user = current_user.username)  
             db.session.add(s)
             db.session.commit()
+    #end POST method, begin page info gathering
     SPOON_API_GET_RECIPE_URL = "https://api.spoonacular.com/recipes/" + recipe_id
     spoon_api_response_1 = requests.get(
             SPOON_API_GET_RECIPE_URL + '/information',
@@ -224,4 +226,4 @@ def list_generator():
         # >else incriment ingredients by whats required for the recipe 
     
 
-#app.run()
+app.run()

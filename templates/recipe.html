@@ -1,57 +1,54 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <title>{{recipe["title"]}}</title>
-  <style>
-    body {
-    color: #91fefb;
-    background-color: #00071e;
-    }
-  </style>
+    <meta charset="UTF-8">
+    <title>{{recipe["title"]}}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/recipe.css') }}">
 </head>
 
 <body>
-    <!--Home & Searchbar here-->
-    <div class="topnav">
-        <a class="active" href="{{url_for('index')}}"><img src="/images/home.png"></a>
-        <div class="search">
-            <form action="{{url_for('search')}}">
-                <input type="text" placeholder="Search.." name="term">
-                <button type="submit"></button>
-            </form>
-          </div>
-      </div>
+    <!-- Navigation bar -->
+    <div class="navbar">
+		<a href="{{ url_for('index') }}">Home</a>
+		<a href="{{ url_for('search') }}">Search</a>
+		<a href="{{ url_for('logout') }}">Logout</a>
+    </div>
+	<br>
+
     <!--Recipe content here-->
     <h1>{{recipe["title"]}}</h1>
-    <div>
-        <img src="{{recipe['image']}}" width="100%" margin: -10px>
-    </div>
-    {{recipe['summary']}}
-    <div></div>
+    <div><img src="{{recipe['image']}}"></div>
+    <br>
+
     <!--button to add to savedlist here-->
     <div class="save recipe">
-        <form action="/submit" method="post">
+        <form action="{{url_for('recipe', recipe_id = recipe['id'])}}" method="post">
         <input type="hidden" name="type" value='save'>
         <label>Save Recipe</label>
         <input type="submit" value="Submit">
         </form>
     </div>
+    <br>
+
     <!--Recipe information here-->
     servings: {{recipe['servings']}} <br>
     cook time: {{recipe['readyInMinutes']}} minutes <br>
     Ingredients: <br>
     {% for item in ingred['ingredients'] %}
-        <li>{{ingred['ingredients'][item]['amount']['us']['value']}} {{ingred['ingredients'][item]['amount']['us']['unit']}} 
-        {{ingred['ingredients'][item]['name']}} </li>
+        <li>{{item['amount']['us']['value']}} {{item['amount']['us']['unit']}} 
+        {{item['name']}} </li>
     {% endfor %}
     Instructions:<br>
     {% for step in instruct['steps'] %}
-        <li>{{instruct['steps'][step]['number']}} . 
-        {{instruct['steps'][step]['step']}} </li>
+        <li>{{step['number']}} . 
+        {{step['step']}} </li>
     {% endfor %}
+    <br>
+
     <!--comments section-->
     <div class="comments">
-        <form action="/submit" method="post">
+        <!--comment submission box-->
+        <form action="{{url_for('recipe', recipe_id = recipe['id'])}}" method="post">
         <input type="hidden" name="type" value='comment'>
         <label>
             Rating:
@@ -74,6 +71,7 @@
         </label>
         <input type="submit" value="Submit">
         </form>
+        <!--display comments-->
         <tr>
             {%for id in query%}
             <td>{{id.user}}</td>

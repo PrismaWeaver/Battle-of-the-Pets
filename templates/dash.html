@@ -7,13 +7,12 @@
     <link rel="stylesheet" href="{{ url_for('static', filename='css/dash.css') }}">
 </head>
 <body>
-	<!-- Navigation Bar -->
+	<!-- Navigation bar -->
     <div class="navbar">
-		<a>Home</a>
-		<a href=" {{url_for('search_page') }}">Search</a>
+		<a href="{{ url_for('index') }}">Home</a>
+		<a href="{{ url_for('search') }}">Search</a>
 		<a href="{{ url_for('logout') }}">Logout</a>
     </div>
-
 	<br>
 
 	<!-- Main Section -->
@@ -28,7 +27,13 @@
 		  <li>
 			  <!-- <a>tacos</a> -->
 			<p> saved list: {{ saved_list }} </p>
-			<p> comment: {{ comments }} </p>
+			<li>
+				{%for id in query%}
+				<td><a href="{{url_for('recipe', recipe_id = id.recipe)}}">recipe page</a></td>
+				<td>{{id.rating}}/10</td>
+				<td>{{id.comment}}</td>
+				{%endfor%}
+			</li>
 		  </li>
 		  <hr>
 		</ul>

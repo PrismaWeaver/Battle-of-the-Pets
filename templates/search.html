@@ -1,33 +1,43 @@
 <!DOCTYPE html>
-<html lang="en">
-<head>
-  <title>Recipe Screen</title>
-  <style>
-    body {
-    color: #91fefb;
-    background-color: #00071e;
-    }
-  </style>
-</head>
-
-<body>
-  <!--Home & Searchbar here-->
-  <div class="topnav">
-    <a class="active" href="{{url_for('index')}}"><img src="/images/home.png"></a>
-    <div class="search">
-      <form action="{{url_for('search')}}">
-        <input type="text" placeholder="Search.." name="term">
-        <button type="submit"></button>
-      </form>
+<html>
+  <head>
+    <title>Search</title>
+    <link href="{{ url_for('static', filename='css/search.css') }}" rel="stylesheet">
+  </head>
+  <body>
+    <!-- Navigation bar -->
+    <div class="navbar">
+		<a href="{{ url_for('index') }}">Home</a>
+		<a href="{{ url_for('search') }}">Search</a>
+		<a href="{{ url_for('logout') }}">Logout</a>
     </div>
-  </div>
-  <!--Display search info, displays full results on one page for now-->
-  Results for: {{term}} <br>
-  {% for recipe in results['results'] %}
-    <li>
-      <a href="{{url_for('recipe')}}" recipe_id="{{results['results'][recipe]['id']}}">{{results['results'][recipe]['title']}}<img src="{{results['results'][recipe]['image']}}"></a>
-    </li>
-  {% endfor %}
-</body>
 
+	<br>
+
+	<h1> Search for Recipes </h1>
+    <!-- Search form -->
+    <form method="POST" action="{{ url_for('search') }}">
+      <input type="text" id="query" name="query">
+      <button type="submit">Submit</button>
+    </form>
+
+	<br>
+
+	{% if results != None %}
+	<ul>
+	{% for  recipe in results['results'] %}
+	  {% if loop.index0 == 0 %}
+	    <hr>
+	  {% endif %}
+	  <li>
+		<a href="{{url_for('recipe', recipe_id = recipe['id'])}}">{{recipe['title']}}</a> <br>
+		<img src="{{recipe['image']}}">
+	  </li>
+	  <hr>
+	{% endfor %}
+	</ul>
+	{% endif %}
+
+  </body>
 </html>
+
