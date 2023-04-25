@@ -1,8 +1,10 @@
+#### Github link
+
 https://github.com/PrismaWeaver/Recipe-App
 
-# Recipe App
+#### Project Proposal
 
-a web app that allows users to create an account and create and modify recipe lists
+https://docs.google.com/document/d/12R1pfrZC38nBQRt_sEedk_BR6ZJ01OqTOzb9zItDbbo
 
 #### Authors
 
