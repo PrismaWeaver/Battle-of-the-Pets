@@ -225,5 +225,5 @@ def list_generator():
         # >if key does not exist, set initial value to 0 and add ingredients
         # >else incriment ingredients by whats required for the recipe 
     
-
-app.run()
+#comment this out when using "fly deploy", uncomment when testing locally
+#app.run()
