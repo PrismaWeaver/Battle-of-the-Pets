@@ -33,7 +33,8 @@ class Comment(db.Model): #a model for a row, defines a table
 class Saved_Recipes(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     user = db.Column(db.String(80), unique=False, nullable=False)
-    recipe = db.Column(db.Integer, unique=False, nullable=False)
+    recipe_name = db.Column(db.String(420), unique=False, nullable=False)
+    recipe_id = db.Column(db.Integer, unique=False, nullable=False)
     
 class Person(db.Model,UserMixin):
     id = db.Column(db.Integer, primary_key=True)
@@ -178,7 +179,8 @@ def recipe(recipe_id):
             db.session.add(c)
             db.session.commit()
         else: #for adding to saved list
-            s = Saved_Recipes(recipe = recipe_id, 
+            s = Saved_Recipes(recipe_id = recipe_id, 
+                              recipe_name = form_data['name'],
                             user = current_user.username)  
             db.session.add(s)
             db.session.commit()

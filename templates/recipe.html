@@ -25,6 +25,7 @@
     <div class="save recipe">
         <form action="{{url_for('recipe', recipe_id = recipe['id'])}}" method="post">
         <input type="hidden" name="type" value='save'>
+        <input type="hidden" name="name" value="{{recipe['title']}}">
 		<div>
         <label style="align-text:center;">Save Recipe</label>
         <input type="submit" value="Submit">

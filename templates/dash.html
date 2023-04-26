@@ -26,7 +26,11 @@
 		  <hr>
 		  <li>
 			  <!-- <a>tacos</a> -->
-			<p> saved list: {{ saved_list }} </p>
+			  <li>
+				{%for id in saved_list%}
+				<td><a href="{{url_for('recipe', recipe_id = id.recipe)}}">{{id.recipe_name}}</a></td>
+				{%endfor%}
+			</li>
 			<li>
 				{%for id in query%}
 				<td><a href="{{url_for('recipe', recipe_id = id.recipe)}}">recipe page</a></td>
