@@ -40,15 +40,7 @@ Spoonacular REST API integration
 
 User Login
 
-Beautification 
-
 #### Stretch Goals
-
-oB7ZeRKkto
-
-Aggregating ingredients from a list of recipes to create a grocery list for the week, etc.
-
-In order to use this feature, you can add recipes from your dashboard into your “cart” and then hit “generate list” at the end
 
 SGmd1jejtH
 
