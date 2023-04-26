@@ -28,30 +28,28 @@
 			  <!-- <a>tacos</a> -->
 			  <li>
 				{%for id in saved_list%}
-				<td><a href="{{url_for('recipe', recipe_id = id.recipe)}}">{{id.recipe_name}}</a></td>
+				<li><a href="{{url_for('recipe', recipe_id = id.recipe_id)}}">{{id.recipe_name}}</a></li>
 				{%endfor%}
 			</li>
-			<li>
-				{%for id in query%}
-				<td><a href="{{url_for('recipe', recipe_id = id.recipe)}}">recipe page</a></td>
-				<td>{{id.rating}}/10</td>
-				<td>{{id.comment}}</td>
-				{%endfor%}
-			</li>
+			
 		  </li>
 		  <hr>
 		</ul>
       </div>
 
-	  <!-- right Side - Grocery List -->
+	  <!-- right Side - Comments -->
       <div class="right">
-        <h1>Grocery List</h1>
+        <h1>User's Comments</h1>
 
 		<ul>
 	   	  <hr>
-		  <li>
-			<p>tortillas</p>
-		  </li>
+			 <li>
+				{%for id in comments%}
+				<td><a href="{{url_for('recipe', recipe_id = id.recipe)}}">recipe page</a></td>
+				<td>{{id.rating}}/10</td>
+				<td>{{id.comment}}</td>
+				{%endfor%}
+			</li>
 		  <hr>
 		</ul>
       </div>
